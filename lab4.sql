@@ -72,7 +72,7 @@ FROM employees;
 
 SELECT * FROM employees WHERE hire_date > DATE('2021-01-01');
 SELECT * FROM employees WHERE salary BETWEEN 60000 AND 70000;
-SELECT * FROM employees WHERE last_name LIKE 'S%' OR last_name LIKE 'J*';
+SELECT * FROM employees WHERE last_name LIKE 'S' OR last_name LIKE 'J*';
 SELECT * FROM employees WHERE manager_id IS NOT NULL AND department = 'IT';
 
 --Part 3
@@ -213,4 +213,70 @@ SELECT
   ROUND(LEAST(AVG(e1.salary),  MAX(e1.salary)), 2)  AS demo_least
 FROM employees e1
 GROUP BY e1.department;
+
+CREATE TABLE accounts (
+    account_id SERIAL PRIMARY KEY,
+    account_holder VARCHAR(20),
+    account_type VARCHAR(20),
+    balance INT,
+    opening_date DATE,
+    branch_code INT,
+    status VARCHAR(20)
+);
+
+CREATE TABLE transactions (
+    transaction_id SERIAL PRIMARY KEY,
+    account_id INT,
+    transaction_date DATE,
+    amount INT,
+    transaction_type VARCHAR(20),
+    description VARCHAR(100)
+);
+
+CREATE TABLE branches (
+    branch_code INT,
+    branch_name VARCHAR(20),
+    city VARCHAR(20),
+    manager_name VARCHAR(20),
+    employee_count INT
+);
+
+SELECT upper(accounts.account_holder) FROM accounts;
+SELECT "left"(accounts.branch_code, 5) FROM accounts;
+
+SELECT accounts.balance,
+    CASE
+        WHEN accounts.balance > 100000 THEN 'High Value'
+        WHEN accounts.balance BETWEEN 10000 and 100000 THEN 'Medium Value'
+        ELSE 'Low Value'
+        END
+FROM accounts;
+
+SELECT * FROM accounts WHERE account_holder LIKE 'a%';
+
+SELECT * FROM transactions WHERE (amount BETWEEN 500 and 5000) and transaction_type = 'Withdrawal';
+
+SELECT accounts.balance,
+       accounts.balance = 12 * accounts.balance AS annual,
+       accounts.balance = 0.25 * accounts.balance AS annual_interest
+FROM accounts;
+
+SELECT * FROM branches WHERE employee_count > 10 OR (city = 'New York');
+
+SELECT *
+FROM transactions
+WHERE description IS NULL OR description = '';
+
+SELECT
+    account_id,
+    SUM(amount) AS total_amount
+FROM transactions
+GROUP BY account_id;
+
+SELECT
+    branch_code,
+    COUNT(*) AS account_count
+FROM accounts
+GROUP BY branch_code
+HAVING COUNT(*) > 5;
 
